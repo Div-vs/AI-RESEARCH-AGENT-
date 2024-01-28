@@ -17,12 +17,13 @@ import requests
 import json
 from langchain.schema import SystemMessage
 from fastapi import FastAPI
+import streamlit as st
+import dotenv 
+import tiktoken
 
-# load_dotenv()
-# brwoserless_api_key = os.getenv("BROWSERLESS_API_KEY")
-# serper_api_key = os.getenv("SERP_API_KEY")
-brwoserless_api_key = "3c0c3555-2d08-47a1-9c3a-7970ef6d1209"
-serper_api_key = "ff2ec67e134c4761f4abced589669a78186dd05c"
+dotenv.load_dotenv()
+brwoserless_api_key = os.getenv("BROWSERLESS_API_KEY")
+serper_api_key = os.getenv("SERP_API_KEY")
 # 1. Tool for search
 
 
@@ -72,6 +73,7 @@ def scrape_website(objective: str, url: str):
 
     # Check the response status code
     if response.status_code == 200:
+        # print(response.content)
         soup = BeautifulSoup(response.content, "html.parser")
         text = soup.get_text()
         print("CONTENTTTTTT:", text)
@@ -192,17 +194,18 @@ if __name__ == '__main__':
     main()
 
 
-# # 5. Set this as an API endpoint via FastAPI
-# app = FastAPI()
+# 5. Set this as an API endpoint via FastAPI
+app = FastAPI()
 
 
-# class Query(BaseModel):
-#     query: str
+class Query(BaseModel):
+    query: str
 
 
-# @app.post("/")
-# def researchAgent(query: Query):
-#     query = query.query
-#     content = agent({"input": query})
-#     actual_content = content['output']
-#     return actual_content
+@app.post("/")
+def researchAgent(query: Query):
+    query = query.query
+    content = agent({"input": query})
+    actual_content = content['output']
+    return actual_content
+
